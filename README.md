@@ -52,3 +52,5 @@ set an alarm to go off at 13:37 tomorrow
 python alarmpy.py --tomorrow 13:37
 
 ```
+##Known issues
+Playing certain mp3 files on linux will cause the whole shebang to crash.  Thanks pygame.
