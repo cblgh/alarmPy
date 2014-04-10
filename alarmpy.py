@@ -260,7 +260,7 @@ class AlarmPy(object):
         # randomly choose a song from the song dir
         # do this every time we run an alarm
 
-        self.extensions = ("mp3", )
+        self.extensions = ("mp3", "ogg", "wav" )
         # only grab the files that we can listen to
         songs = [f for f in os.listdir(self.song_dir) if
                 f.lower().endswith(self.extensions)]
