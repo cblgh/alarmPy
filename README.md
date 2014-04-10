@@ -4,6 +4,7 @@ alarmPy
 A Google Calendar powered alarm clock
 
 ##Requirements
+* Python2.7
 * A Google account, with a Google calendar api key
 * pytz
 * pygame
