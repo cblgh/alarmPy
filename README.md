@@ -46,7 +46,7 @@ examples:
 no arguments starts the alarm server  
 python alarmpy.py
 
-set an alarm for 15 minutes from now and name the alarm to "pasta done!!"
+set an alarm for 12 minutes from now and name the alarm to "pasta done!!"
 python alarmpy.py --timer 12 -n pasta done!!
 
 set an alarm to go off at 13:37 tomorrow
