@@ -297,8 +297,8 @@ group.add_argument("-t", "--today", nargs=1, metavar="MM:SS",
         help="Only takes a time parameter; assumes alarm is for today.")
 group.add_argument("--tomorrow", nargs=1, metavar="HH:MM",
         help="Specifies an alarm to go off at HH:MM tomorrow.")
-group.add_argument("--timer", nargs=1, metavar="<offset in minutes>",
-        type=int, help="Specifies an alarm to go off <minutes> from now.")
+group.add_argument("--timer", nargs=1, metavar="MM, or HH:MM",
+        help="Specifies an alarm to go off <minutes>/<hours:minutes> from now.")
 parser.add_argument("-p", "--precise", action="store_true", 
         help="Allows alarm times with seconds. e.g. YYYY-mm-dd HH:MM:SS")
 parser.add_argument("-r", "--recurring", metavar="<comma delim list>",
@@ -343,8 +343,14 @@ def main():
         error_msg = "Invalid input.\nPlease format as: YYYY-MM-DD HH:MM"
         # if today, prepend today's date and format dtstring
         if args.timer:
-            error_msg ="Invalid input.\nPlease input the offset in minutes only."
-            offset = datetime.timedelta(minutes=args.timer[0])
+            error_msg ="Invalid input.\nPlease input the offset in minutes, or as HH:MM."
+            # is the input formated as HH:MM?
+            try:
+                h, m = args.timer[0].split(":")
+                offset = datetime.timedelta(hours=int(h), minutes=int(m))
+            # nope, treat it as minutes
+            except ValueError:
+                offset = datetime.timedelta(minutes=int(args.timer[0]))
             dtobj = alarm.now(alarm.tz) + offset
             dtstring = dtobj.strftime("%Y-%m-%dT%H:%M:%S")
         elif args.today:
