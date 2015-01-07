@@ -15,7 +15,6 @@ import pygame
 import os
 import random
 import Queue
-import codecs
 try:
     import RPi.GPIO as GPIO
     button_available = True
