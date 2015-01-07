@@ -15,6 +15,7 @@ import pygame
 import os
 import random
 import Queue
+import codecs
 try:
     import RPi.GPIO as GPIO
     button_available = True
@@ -337,7 +338,7 @@ def main():
 
     if args.setalarm or args.today or args.tomorrow or args.timer:
         if args.name:
-            name = " ".join(args.name)
+            name = " ".join(args.name).decode("iso-8859-1")
         else:
             name = "alarm"
         error_msg = "Invalid input.\nPlease format as: YYYY-MM-DD HH:MM"
