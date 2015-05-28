@@ -341,29 +341,40 @@ def main():
         else:
             name = "alarm"
         error_msg = "Invalid input.\nPlease format as: YYYY-MM-DD HH:MM"
+        dtstrings = []
         # if today, prepend today's date and format dtstring
         if args.timer:
             error_msg ="Invalid input.\nPlease input the offset in minutes, or as HH:MM."
-            # is the input formated as HH:MM?
-            try:
-                h, m = args.timer[0].split(":")
-                offset = datetime.timedelta(hours=int(h), minutes=int(m))
-            # nope, treat it as minutes
-            except ValueError:
-                offset = datetime.timedelta(minutes=int(args.timer[0]))
-            dtobj = alarm.now(alarm.tz) + offset
-            dtstring = dtobj.strftime("%Y-%m-%dT%H:%M:%S")
+            # allows for multiple timers to be set in one command
+            times = args.timer[0].split(",")
+            for time in times:
+                # check if the input is formatted as HH:MM
+                try:
+                    h, m = time.split(":")
+                    offset = datetime.timedelta(hours=int(h), minutes=int(m))
+                # nope, treat it as minutes
+                except ValueError:
+                    offset = datetime.timedelta(minutes=int(time))
+                dtobj = alarm.now(alarm.tz) + offset
+                dtstrings.append(dtobj.strftime("%Y-%m-%dT%H:%M:%S"))
         elif args.today:
-            error_msg = "Invalid input.\nPlease format as: HH:MM"
-            date = alarm.now(alarm.tz).strftime('%Y-%m-%dT')
-            dtstring = date + args.today[0]
+            # allows for multiple timers to be set in one command
+            times = args.today[0].split(",")
+            for time in times:
+                error_msg = "Invalid input.\nPlease format as: HH:MM"
+                date = alarm.now(alarm.tz).strftime('%Y-%m-%dT')
+                dtstrings.append(date + time)
         elif args.tomorrow:
-            error_msg = "Invalid input.\nPlease format as: HH:MM"
-            date = alarm.now(alarm.tz) + datetime.timedelta(days=1)
-            dtstring = date.strftime('%Y-%m-%dT') + args.tomorrow[0]
+            times = args.tomorrow[0].split(",")
+            for time in times:
+                error_msg = "Invalid input.\nPlease format as: HH:MM"
+                date = alarm.now(alarm.tz) + datetime.timedelta(days=1)
+                dtstrings.append(date.strftime('%Y-%m-%dT') + time)
         else:
-            # join date and time with T inbetween
-            dtstring = "T".join(args.setalarm)
+            times = args.setalarm[1].split(",")
+            for time in times:
+                # join date and time with T inbetween
+                dtstrings.append("T".join([args.setalarm[0], time]))
 
         if args.precise: 
             error_msg += ":SS"
@@ -371,23 +382,26 @@ def main():
             # we've already formatted the seconds for the timer
             pass
         else:
-            seconds =":00"
-            dtstring += seconds
-        # get the user input, format it correctly and cat with utc offset
-        dtstring = "{}{}".format(dtstring, alarm.utc)
-        print dtstring
-        try: 
-            if args.recurring:
-                alarm.set_alarm(dtstring, name=name, days=args.recurring)
-            else:
-                alarm.set_alarm(dtstring, name=name)
-        except (ValueError, apiclient.errors.HttpError) as e:
-            print "Error: " + str(e).capitalize()
-            print error_msg
-            sys.exit(1)
-        except:
-            print "{}\n{}".format(*sys.exc_info()[0:2])
-            sys.exit(1)
+            for index, dtstring in enumerate(dtstrings):
+                seconds =":00"
+                dtstrings[index] = dtstring + seconds
+        # process all the alarms we set
+        for dtstring in dtstrings:
+            # get the user input, format it correctly and cat with utc offset
+            dtstring = "{}{}".format(dtstring, alarm.utc)
+            print dtstring
+            try: 
+                if args.recurring:
+                    alarm.set_alarm(dtstring, name=name, days=args.recurring)
+                else:
+                    alarm.set_alarm(dtstring, name=name)
+            except (ValueError, apiclient.errors.HttpError) as e:
+                print "Error: " + str(e).capitalize()
+                print error_msg
+                sys.exit(1)
+            except:
+                print "{}\n{}".format(*sys.exc_info()[0:2])
+                sys.exit(1)
     else:
         wait_time = 60
         while True:
