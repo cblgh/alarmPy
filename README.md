@@ -52,6 +52,11 @@ python alarmpy.py --timer 12 -n pasta done!!
 set an alarm to go off at 13:37 tomorrow
 python alarmpy.py --tomorrow 13:37
 
+set multiple alarms in one go
+python alarmpy.py --timer 12,30,50
+python alarmpy.py --today 13:37,19:42;23:59
+python alarmpy.py -s 2015-12-24 08:30,15:30,19:42
+
 ```
 ##Known issues
 Playing certain mp3 files on linux will cause the whole shebang to crash.  Thanks pygame!
